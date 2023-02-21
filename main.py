@@ -1,7 +1,9 @@
 from game import App
+from utils.entreprise import Entreprise
 
 def main():
-    app = App()
+    entreprise = Entreprise("test")
+    app = App(entreprise=entreprise)
     app.mainloop()
 
 if __name__ == "__main__":
