@@ -3,7 +3,7 @@ SALAIRE = 1150
 
 class Entreprise:
 
-    def __init__(self, name: str, tresorerie: int = 1000, employes = 1, ressources: list[int] = [0, 0]):
+    def __init__(self, name: str, tresorerie: int = 10000, employes = 0, ressources: list[int] = [0, 0], prix_produit: int = 100):
         """
         name : nom de l'entreprise
         tresorerie : ressources financières de l'entreprise
@@ -15,11 +15,17 @@ class Entreprise:
         self.tresorerie = tresorerie
         self.employes = employes
         self.ressources = ressources
+        self.prix_produit = prix_produit
     
     #fonctions utiles pour manipuler la tresorerie
 
-    def calcul_benefice(self):
+    def calcul_benefice(self, production_modifier: float):
         salaires = self.employes * SALAIRE
+        entree_brute = round(self.ressources[0]*self.employes*self.prix_produit*production_modifier, 2)
+
+        benefice_net = entree_brute - salaires
+
+        return (benefice_net, entree_brute, salaires)
 
     def add_tresorerie(self, amount: int):
         self.tresorerie += amount
