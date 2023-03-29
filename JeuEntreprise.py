@@ -1,5 +1,6 @@
 from entreprise import Entreprise
 import random
+import databaseHandler as dbh
 
 
 def investissement(entreprise: Entreprise, prix_ressources: list[int] = [50, 100, 200]) -> int:
@@ -52,7 +53,7 @@ def gestion_du_personnel(entreprise: Entreprise):
         return 0
     elif answer == 2:
         amount = ""
-        while amount > entreprise.employes:
+        while  type(amount) != int:
             amount = eval(input("combien d'employés voulez vous licencier ? >> "))
 
         entreprise.licenciement(amount)
@@ -68,8 +69,27 @@ def show_benef(benef: tuple):
     print("salaires : {}".format(benef[2]))
     print("benefice net : {}".format(benef[0]))
 
+def menu():
+    names = dbh.retrieve_data_by_type("entreprise.db", "name")
+    if not len(names) == 0:
+        print(f"vous avez {len(names)} entreprises sauvegardées, voulez vous en charger une ?")
+        a = ""
+        while a not in ("y, n"):
+            a = str(input("(y/n) >> "))
+        if a == "y":
+            print("voici les entreprise que vous pouvez charger : ")
+            for i in range(len(names)):
+                print(i, " - ", names[i][0])
+            print("avec quelle entreprise voulez vous jouer ?")
+            a = ""
+            while a not in [i for i in range(1, len(names)+1)]:
+                a = int(input(">>"))
+            entreprise_selected = names[a-1][0]
+        
 
 def main():
+    dbh.init_db()
+    menu()
     name = str(input("choisissez un nom pour votre entreprise >> "))
     entreprise = Entreprise(name)
 
@@ -78,9 +98,13 @@ def main():
     running = True
     tour = 0
     prod_modifier = 1
+    ressources_to_use = 0
+    prix_ressources = [50, 100, 200]
+    
     while running:
         print(tour, "--------------------------------------------------------| \n\n")
-        benef = entreprise.calcul_benefice(prod_modifier)
+        benef = entreprise.calcul_benefice(prod_modifier, ressources_to_use)
+        entreprise.use_ressources(1, ressources_to_use)
         entreprise.add_tresorerie(benef[0])
         entreprise.display()
 
@@ -88,13 +112,16 @@ def main():
         show_benef(benef)
         
         #investissement : 
-        invested, prod_modifier = investissement(entreprise)
+        invested, prod_modifier = investissement(entreprise, prix_ressources=prix_ressources)
         print("vous avez investi : {}".format(invested))
         print("")
         
         #gestion du personnel : 
         gestion_du_personnel(entreprise)
         print("")
+
+        #utilisation des ressources : 
+        ressources_to_use = entreprise.ressources[1] - int(round(0.1*entreprise.ressources[1])) if entreprise.ressources[1] - int(round(0.1*entreprise.ressources[1])) >= 0 and entreprise.employes != 0 and entreprise.ressources[0] != 0 else 0
         tour += 1
 
 if __name__ == "__main__":

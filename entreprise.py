@@ -19,9 +19,9 @@ class Entreprise:
     
     #fonctions utiles pour manipuler la tresorerie
 
-    def calcul_benefice(self, production_modifier: float):
+    def calcul_benefice(self, production_modifier: float, ressource_to_use: int):
         salaires = self.employes * SALAIRE
-        entree_brute = round(self.ressources[0]*self.employes*self.prix_produit*production_modifier, 2)
+        entree_brute = round(self.ressources[0]*self.employes*self.prix_produit*ressource_to_use*production_modifier, 2)
 
         benefice_net = entree_brute - salaires
 
